@@ -24,7 +24,10 @@ const login = (req, res, next) => {
       return next(reqError);
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_KEY);
-    res.json({ token });
+    res.json({
+      user: user,
+      token: token,
+    });
   })(req, res, next);
 };
 

@@ -1,11 +1,11 @@
 const createError = require("http-errors");
 
-const { BookCategory } = require("../models");
+const { BookCategory, Book } = require("../models");
 const validators = require("../validators");
 
 const getAllBookCategories = async (req, res, next) => {
   try {
-    const bookCategories = await BookCategory.find().populate("user");
+    const bookCategories = await BookCategory.find({user: req.user,}).populate("user");
     res.json(bookCategories);
   } catch (error) {
     console.log(error);
@@ -82,6 +82,15 @@ const updateBookCategory = async (req, res, next) => {
 
 const deleteBookCategory = async (req, res, next) => {
   try {
+    const books = await Book.find({ category: req.params.id });
+    if (books.length > 0) {
+      const reqError = createError(
+        400,
+        "Cannot delete a category that has books, first delete all books of this category."
+      );
+      return next(reqError);
+    }
+
     const bookCategory = await BookCategory.findByIdAndDelete(req.params.id);
 
     if (!bookCategory) {

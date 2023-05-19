@@ -4,8 +4,48 @@ const { Book } = require("../models");
 const validators = require("../validators");
 
 const getAllBooks = async (req, res, next) => {
+  var filter = {};
+
+  if (req.query.titleKeyword && req.query.authorsKeyword) {
+    filter = {
+      $and: [
+        {
+          title: { $regex: req.query.titleKeyword, $options: "xi" },
+        },
+        { authors: { $regex: req.query.authorsKeyword, $options: "xi" } },
+      ],
+    };
+  } else if (req.query.titleKeyword) {
+    filter = {
+      title: { $regex: req.query.titleKeyword, $options: "xi" },
+    };
+  } else if (req.query.authorsKeyword) {
+    filter = { authors: { $regex: req.query.authorsKeyword, $options: "xi" } };
+  }
+
   try {
-    const books = await Book.find().populate("user").populate("category");
+    console.log(req.user);
+
+    const books = await Book.find({ user: req.user, ...filter })
+      .populate("user")
+      .populate("category")
+      .sort({ timeCreated: "descending" });
+
+    res.json(books);
+  } catch (error) {
+    console.log(error);
+    const reqError = createError(500, "Server error!");
+    return next(reqError);
+  }
+};
+
+const getBooksOfCategory = async (req, res, next) => {
+  try {
+    const books = await Book.find({user: req.user, category: req.params.categoryId })
+      .populate("user")
+      .populate("category")
+      .sort({ timeCreated: "descending" });
+
     res.json(books);
   } catch (error) {
     console.log(error);
@@ -99,6 +139,7 @@ const deleteBook = async (req, res, next) => {
 
 module.exports = {
   getAllBooks,
+  getBooksOfCategory,
   createBook,
   getBookById,
   updateBook,

@@ -11,6 +11,10 @@ mongoose.connect(
 
 const db = mongoose.connection;
 
+mongoose.set("debug", (collectionName, method, query, doc) => {
+  console.log(`${collectionName}.${method}`, JSON.stringify(query), doc);
+});
+
 db.on("error", console.error.bind(console, "connection error:"));
 
 db.once("open", function () {

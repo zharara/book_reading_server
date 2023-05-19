@@ -11,6 +11,12 @@ router.get(
   bookController.getAllBooks
 );
 
+router.get(
+  "/get-books-of-category/:categoryId",
+  passport.authenticate("jwt", { session: false }),
+  bookController.getBooksOfCategory
+);
+
 router.post(
   "/create",
   passport.authenticate("jwt", { session: false }),

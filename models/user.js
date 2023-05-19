@@ -47,9 +47,7 @@ userSchema.pre("save", function (next) {
 });
 
 // Compare the password provided by the user with the hashed password in the database
-const comparePassword = (userSchema.methods.comparePassword = function (
-  candidatePassword
-) {
+userSchema.methods.comparePassword = function (candidatePassword) {
   const user = this;
   return new Promise((resolve, reject) => {
     bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
@@ -62,7 +60,7 @@ const comparePassword = (userSchema.methods.comparePassword = function (
       resolve(true);
     });
   });
-});
+};
 
 const User = mongoose.model("User", userSchema);
 
