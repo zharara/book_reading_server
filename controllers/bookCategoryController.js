@@ -5,7 +5,9 @@ const validators = require("../validators");
 
 const getAllBookCategories = async (req, res, next) => {
   try {
-    const bookCategories = await BookCategory.find({user: req.user,}).populate("user");
+    const bookCategories = await BookCategory.find({ user: req.user }).populate(
+      "user"
+    );
     res.json(bookCategories);
   } catch (error) {
     console.log(error);
@@ -65,8 +67,8 @@ const updateBookCategory = async (req, res, next) => {
       req.params.id,
       req.body,
       { new: true }
-    );
-
+    ).populate("user");
+    
     if (!bookCategory) {
       const reqError = createError(404, "Not found!");
       return next(reqError);

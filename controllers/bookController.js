@@ -41,7 +41,10 @@ const getAllBooks = async (req, res, next) => {
 
 const getBooksOfCategory = async (req, res, next) => {
   try {
-    const books = await Book.find({user: req.user, category: req.params.categoryId })
+    const books = await Book.find({
+      user: req.user,
+      category: req.params.categoryId,
+    })
       .populate("user")
       .populate("category")
       .sort({ timeCreated: "descending" });
@@ -103,7 +106,9 @@ const updateBook = async (req, res, next) => {
 
     const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-    });
+    })
+      .populate("user")
+      .populate("category");
 
     if (!book) {
       const reqError = createError(404, "Not found!");
